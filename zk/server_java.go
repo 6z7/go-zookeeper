@@ -97,7 +97,7 @@ func findZookeeperFatJar() string {
 	if zkPath == "" {
 		paths = jarSearchPaths
 	} else {
-		paths = []string{filepath.Join(zkPath, "contrib/fatjar/zookeeper-*-fatjar.jar")}
+		paths = []string{zkPath}
 	}
 	for _, path := range paths {
 		matches, _ := filepath.Glob(path)
