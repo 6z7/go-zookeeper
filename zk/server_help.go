@@ -26,6 +26,33 @@ type TestCluster struct {
 	Servers []TestServer
 }
 
+func StartTestStandalone(zkConfig string, stdout, stderr io.Writer) (*TestCluster, error) {
+	success := false
+	cluster := &TestCluster{}
+	defer func() {
+		if !success {
+			cluster.Stop()
+		}
+	}()
+	srv := &Server{
+		ConfigPath: zkConfig,
+		Stdout:     stdout,
+		Stderr:     stderr,
+	}
+	if err := srv.Start(); err != nil {
+		return nil, err
+	}
+	cluster.Servers = append(cluster.Servers, TestServer{
+		Port: 2181,
+		Srv:  srv,
+	})
+	if err := cluster.waitForStart(10, time.Second); err != nil {
+		return nil, err
+	}
+	success = true
+	return cluster, nil
+}
+
 func StartTestCluster(size int, stdout, stderr io.Writer) (*TestCluster, error) {
 	tmpPath, err := ioutil.TempDir("", "gozk")
 	if err != nil {

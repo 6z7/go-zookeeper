@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"os"
 	"reflect"
 	"regexp"
 	"sort"
@@ -15,6 +16,14 @@ import (
 	"testing"
 	"time"
 )
+
+func TestStartTestStandalone(t *testing.T) {
+	ts, err := StartTestStandalone("zoo.cfg", os.Stdout, os.Stderr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ts.waitForStop(1, time.Second)
+}
 
 func TestStateChanges(t *testing.T) {
 	ts, err := StartTestCluster(1, nil, logWriter{t: t, p: "[ZKERR] "})
